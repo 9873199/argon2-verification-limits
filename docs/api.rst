@@ -18,6 +18,30 @@ They are taken from :data:`argon2.profiles.RFC_9106_LOW_MEMORY`, but they may va
 You can use :func:`argon2.profiles.get_default_parameters` to get the current platform's defaults.
 
 
+Verification limits
+-------------------
+
+An encoded hash handed to :meth:`PasswordHasher.verify` is external input:
+the ``m``, ``t`` and ``p`` parameters embedded in it tell Argon2 how much
+memory and CPU to consume.
+If hashes can originate from an untrusted source, you can attach a
+:class:`VerificationLimits` policy to the :class:`PasswordHasher`.
+Every structural and resource check then runs *before* the Argon2 C library
+is called, so an over-budget hash is rejected without allocating the
+requested memory or running a single Argon2 iteration.
+
+.. autoclass:: VerificationLimits
+   :members:
+
+A well-formed hash that violates the policy raises
+:exc:`argon2.exceptions.VerificationLimitExceeded`; a malformed hash raises
+:exc:`argon2.exceptions.InvalidHashError`.
+Neither error is a password mismatch, and neither error message contains the
+password or the hash.
+If no :class:`VerificationLimits` are configured, :meth:`PasswordHasher.verify`
+keeps its historical, unrestricted behavior.
+
+
 Profiles
 --------
 
@@ -91,6 +115,8 @@ Exceptions
 .. autoexception:: argon2.exceptions.VerificationError
 
 .. autoexception:: argon2.exceptions.VerifyMismatchError
+
+.. autoexception:: argon2.exceptions.VerificationLimitExceeded
 
 .. autoexception:: argon2.exceptions.HashingError
 

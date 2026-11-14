@@ -20,6 +20,19 @@ You can find our backwards-compatibility policy [here](https://github.com/hynek/
 - Official support for Python 3.15.
   No code changes were necessary.
 
+- `argon2.VerificationLimits` and the `verification_limits` argument of
+  `argon2.PasswordHasher`.
+  They let you treat hashes passed to `PasswordHasher.verify()` as untrusted
+  input: the encoded hash is parsed with bounded PHC fields and audited
+  against limits on its total length, memory cost, time cost, parallelism,
+  `m*t` work factor, and decoded salt/hash lengths *before* any Argon2
+  computation.
+  Over-budget hashes raise the new
+  `argon2.exceptions.VerificationLimitExceeded`, malformed hashes raise
+  `argon2.exceptions.InvalidHashError`, and neither error echoes the
+  password or the hash.
+  Without limits, `verify()` keeps its previous behavior.
+
 
 ### Removed
 

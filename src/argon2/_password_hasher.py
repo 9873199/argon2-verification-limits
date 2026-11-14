@@ -7,10 +7,15 @@ import os
 from typing import ClassVar, Literal
 
 from ._utils import (
+    NoneType,
     Parameters,
     _check_types,
     extract_parameters,
     validate_params_for_platform,
+)
+from ._verification_limits import (
+    VerificationLimits,
+    parse_and_check_encoded_hash,
 )
 from .exceptions import InvalidHashError
 from .low_level import Type, hash_secret, verify_secret
@@ -70,6 +75,13 @@ class PasswordHasher:
             Argon2 type to use.  Only change for interoperability with legacy
             systems.
 
+        verification_limits:
+            Optional :class:`~argon2.VerificationLimits` governing which
+            hashes :meth:`verify` is allowed to pass to Argon2.  The encoded
+            hash is untrusted input: its structure and resource costs are
+            fully checked before any Argon2 computation happens.  ``None``
+            (the default) preserves the historical behavior.
+
     .. versionadded:: 16.0.0
     .. versionchanged:: 18.2.0
        Switch from Argon2i to Argon2id based on the recommendation by the
@@ -81,15 +93,18 @@ class PasswordHasher:
     .. versionadded:: 21.2.0 :meth:`from_parameters`
     .. versionchanged:: 21.2.0
        Changed defaults to :data:`argon2.profiles.RFC_9106_LOW_MEMORY`.
+    .. versionchanged:: 26.1.0
+       Added the *verification_limits* parameter.
 
     .. _salt: https://en.wikipedia.org/wiki/Salt_(cryptography)
     .. _kibibytes: https://en.wikipedia.org/wiki/Binary_prefix#kibi
     """
 
-    __slots__ = ["_parameters", "encoding"]
+    __slots__ = ["_parameters", "_verification_limits", "encoding"]
 
     _parameters: Parameters
     encoding: str
+    _verification_limits: VerificationLimits | None
 
     def __init__(
         self,
@@ -100,6 +115,7 @@ class PasswordHasher:
         salt_len: int = DEFAULT_RANDOM_SALT_LENGTH,
         encoding: str = "utf-8",
         type: Type = Type.ID,
+        verification_limits: VerificationLimits | None = None,
     ):
         e = _check_types(
             time_cost=(time_cost, int),
@@ -109,6 +125,10 @@ class PasswordHasher:
             salt_len=(salt_len, int),
             encoding=(encoding, str),
             type=(type, Type),
+            verification_limits=(
+                verification_limits,
+                (VerificationLimits, NoneType),
+            ),
         )
         if e:
             raise TypeError(e)
@@ -128,6 +148,7 @@ class PasswordHasher:
         # Cache a Parameters object for check_needs_rehash.
         self._parameters = params
         self.encoding = encoding
+        self._verification_limits = verification_limits
 
     @classmethod
     def from_parameters(cls, params: Parameters) -> PasswordHasher:
@@ -172,6 +193,15 @@ class PasswordHasher:
     @property
     def type(self) -> Type:
         return self._parameters.type
+
+    @property
+    def verification_limits(self) -> VerificationLimits | None:
+        """
+        The resource policy applied by :meth:`verify`, or ``None``.
+
+        .. versionadded:: 26.1.0
+        """
+        return self._verification_limits
 
     def hash(self, password: str | bytes, *, salt: bytes | None = None) -> str:
         """
@@ -222,7 +252,10 @@ class PasswordHasher:
 
             It is assumed that the caller is in full control of the hash.  No
             other parsing than the determination of the hash type is done by
-            *argon2-cffi*.
+            *argon2-cffi*, unless the hasher was constructed with
+            :class:`~argon2.VerificationLimits`.  With limits, the encoded
+            hash is treated as untrusted input and its structure and resource
+            costs are fully checked before any Argon2 computation.
 
         Args:
             hash: An encoded hash as returned from :meth:`PasswordHasher.hash`.
@@ -241,6 +274,11 @@ class PasswordHasher:
                 If *hash* is so clearly invalid, that it couldn't be passed to
                 Argon2.
 
+            argon2.exceptions.VerificationLimitExceeded:
+                If *hash* is well-formed but exceeds the configured
+                :class:`~argon2.VerificationLimits`.  Raised before any Argon2
+                computation; it is not a password mismatch.
+
         Returns:
             ``True`` on success, otherwise an exception is raised.
 
@@ -248,12 +286,27 @@ class PasswordHasher:
             Raise :exc:`~argon2.exceptions.VerifyMismatchError` on mismatches
             instead of its more generic superclass.
         .. versionadded:: 18.2.0 Hash type agility.
+        .. versionchanged:: 26.1.0
+            Enforce :class:`~argon2.VerificationLimits` when configured,
+            before calling into Argon2.
         """
-        hash = _ensure_bytes(hash, "ascii")
-        try:
-            hash_type = self._header_to_type[hash[:9]]
-        except LookupError:
-            raise InvalidHashError from None
+        limits = self._verification_limits
+
+        if limits is None:
+            hash = _ensure_bytes(hash, "ascii")
+            try:
+                hash_type = self._header_to_type[hash[:9]]
+            except LookupError:
+                raise InvalidHashError from None
+        else:
+            # All structural and resource checks happen in this branch;
+            # nothing here touches the Argon2 C library.
+            try:
+                hash = _ensure_bytes(hash, "ascii")
+            except UnicodeEncodeError:
+                raise InvalidHashError from None
+            parsed = parse_and_check_encoded_hash(hash, limits)
+            hash_type = parsed.type
 
         return verify_secret(
             hash, _ensure_bytes(password, self.encoding), hash_type

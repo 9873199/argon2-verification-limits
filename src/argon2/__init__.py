@@ -15,6 +15,7 @@ from ._password_hasher import (
     PasswordHasher,
 )
 from ._utils import Parameters, extract_parameters
+from ._verification_limits import VerificationLimits
 from .low_level import Type
 
 
@@ -34,6 +35,7 @@ __all__ = [
     "Parameters",
     "PasswordHasher",
     "Type",
+    "VerificationLimits",
     "exceptions",
     "extract_parameters",
     "hash_password",

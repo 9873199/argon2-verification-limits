@@ -37,6 +37,19 @@ class HashingError(Argon2Error):
     """
 
 
+class VerificationLimitExceeded(Argon2Error):  # noqa: N818
+    """
+    Raised if a hash passed to :meth:`argon2.PasswordHasher.verify` exceeds
+    the configured :class:`argon2.VerificationLimits`.
+
+    This is raised *before* any Argon2 computation is performed and therefore
+    does not mean that the password is wrong.  Neither the password nor the
+    hash are included in the exception message.
+
+    .. versionadded:: 26.1.0
+    """
+
+
 class InvalidHashError(ValueError):
     """
     Raised if the hash is invalid before passing it to Argon2.
