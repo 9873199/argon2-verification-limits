@@ -1,0 +1,37 @@
+............................................................FFF...       [100%]
+================================== FAILURES ===================================
+______________ test_malformed_rejected_before_native[zero-time] _______________
+..\test_verification_limits_review.py:51: in test_malformed_rejected_before_native
+    with pytest.raises(InvalidHashError):PasswordHasher(verification_limits=VerificationLimits()).verify(data,b'password')
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\argon2\_password_hasher.py:311: in verify
+    return verify_secret(
+..\test_verification_limits_review.py:49: in forbidden
+    def forbidden(*args):calls.append(True);raise AssertionError('malformed hash reached native verification')
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: malformed hash reached native verification
+______________ test_malformed_rejected_before_native[zero-lanes] ______________
+..\test_verification_limits_review.py:51: in test_malformed_rejected_before_native
+    with pytest.raises(InvalidHashError):PasswordHasher(verification_limits=VerificationLimits()).verify(data,b'password')
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\argon2\_password_hasher.py:311: in verify
+    return verify_secret(
+..\test_verification_limits_review.py:49: in forbidden
+    def forbidden(*args):calls.append(True);raise AssertionError('malformed hash reached native verification')
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: malformed hash reached native verification
+_____________ test_malformed_rejected_before_native[zero-memory] ______________
+..\test_verification_limits_review.py:51: in test_malformed_rejected_before_native
+    with pytest.raises(InvalidHashError):PasswordHasher(verification_limits=VerificationLimits()).verify(data,b'password')
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\argon2\_password_hasher.py:311: in verify
+    return verify_secret(
+..\test_verification_limits_review.py:49: in forbidden
+    def forbidden(*args):calls.append(True);raise AssertionError('malformed hash reached native verification')
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: malformed hash reached native verification
+=========================== short test summary info ===========================
+FAILED ..\test_verification_limits_review.py::test_malformed_rejected_before_native[zero-time]
+FAILED ..\test_verification_limits_review.py::test_malformed_rejected_before_native[zero-lanes]
+FAILED ..\test_verification_limits_review.py::test_malformed_rejected_before_native[zero-memory]
+3 failed, 63 passed in 14.60s

@@ -1,0 +1,18 @@
+{
+  "independent": {
+    "passed": 63,
+    "failed": 3
+  },
+  "upstream_full": {
+    "passed": 167,
+    "failed": 4,
+    "excluded_environment_failures": 4
+  },
+  "recorded_feature_tests": {
+    "passed": 93,
+    "failed": 0
+  },
+  "runtime_example": {
+    "exit_code": 0
+  }
+}

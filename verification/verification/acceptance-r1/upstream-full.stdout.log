@@ -1,0 +1,93 @@
+.........................................FFFF........................... [ 42%]
+........................................................................ [ 84%]
+...........................                                              [100%]
+================================== FAILURES ===================================
+_____________________ TestLegacyMetadataHack.test_version _____________________
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:407: in from_name
+    return next(iter(cls.discover(name=name)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+During handling of the above exception, another exception occurred:
+tests\test_packaging.py:17: in test_version
+    assert metadata.version("argon2-cffi") == argon2.__version__
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:987: in version
+    return distribution(distribution_name).version
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:960: in distribution
+    return Distribution.from_name(distribution_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:409: in from_name
+    raise PackageNotFoundError(name)
+E   importlib.metadata.PackageNotFoundError: No package metadata was found for argon2-cffi
+
+During handling of the above exception, another exception occurred:
+tests\test_packaging.py:16: in test_version
+    with pytest.deprecated_call():
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT WARN. No warnings of type (<class 'DeprecationWarning'>, <class 'PendingDeprecationWarning'>, <class 'FutureWarning'>) were emitted.
+E    Emitted warnings: [].
+___________________ TestLegacyMetadataHack.test_description ___________________
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:407: in from_name
+    return next(iter(cls.discover(name=name)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+During handling of the above exception, another exception occurred:
+tests\test_packaging.py:24: in test_description
+    assert "Argon2 for Python" == argon2.__description__
+                                  ^^^^^^^^^^^^^^^^^^^^^^
+src\argon2\__init__.py:73: in __getattr__
+    meta = metadata("argon2-cffi")
+           ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:977: in metadata
+    return Distribution.from_name(distribution_name).metadata
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:409: in from_name
+    raise PackageNotFoundError(name)
+E   importlib.metadata.PackageNotFoundError: No package metadata was found for argon2-cffi
+_______________________ TestLegacyMetadataHack.test_uri _______________________
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:407: in from_name
+    return next(iter(cls.discover(name=name)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+During handling of the above exception, another exception occurred:
+tests\test_packaging.py:31: in test_uri
+    assert "https://argon2-cffi.readthedocs.io/" == argon2.__uri__
+                                                    ^^^^^^^^^^^^^^
+src\argon2\__init__.py:73: in __getattr__
+    meta = metadata("argon2-cffi")
+           ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:977: in metadata
+    return Distribution.from_name(distribution_name).metadata
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:409: in from_name
+    raise PackageNotFoundError(name)
+E   importlib.metadata.PackageNotFoundError: No package metadata was found for argon2-cffi
+______________________ TestLegacyMetadataHack.test_email ______________________
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:407: in from_name
+    return next(iter(cls.discover(name=name)))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+During handling of the above exception, another exception occurred:
+tests\test_packaging.py:41: in test_email
+    assert "hs@ox.cx" == argon2.__email__
+                         ^^^^^^^^^^^^^^^^
+src\argon2\__init__.py:73: in __getattr__
+    meta = metadata("argon2-cffi")
+           ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:977: in metadata
+    return Distribution.from_name(distribution_name).metadata
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Administrator\AppData\Local\Programs\Python\Python314\Lib\importlib\metadata\__init__.py:409: in from_name
+    raise PackageNotFoundError(name)
+E   importlib.metadata.PackageNotFoundError: No package metadata was found for argon2-cffi
+=========================== short test summary info ===========================
+FAILED tests/test_packaging.py::TestLegacyMetadataHack::test_version - Failed...
+FAILED tests/test_packaging.py::TestLegacyMetadataHack::test_description - im...
+FAILED tests/test_packaging.py::TestLegacyMetadataHack::test_uri - importlib....
+FAILED tests/test_packaging.py::TestLegacyMetadataHack::test_email - importli...
+4 failed, 167 passed in 94.45s (0:01:34)

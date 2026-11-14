@@ -1,0 +1,8 @@
+Password import verification
+Memory: 32 KiB; iterations: 1; lanes: 1
+Correct password accepted: True
+Incorrect password: rejected as mismatch
+Excessive memory request: blocked by policy
+Native calls for blocked request: 0
+Next allowed verification accepted: True
+Rehash decision still separate: True

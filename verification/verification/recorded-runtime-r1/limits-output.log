@@ -1,0 +1,6 @@
+............................................................FFF...       [100%]
+=========================== short test summary info ===========================
+FAILED ..\test_verification_limits_review.py::test_malformed_rejected_before_native[zero-time]
+FAILED ..\test_verification_limits_review.py::test_malformed_rejected_before_native[zero-lanes]
+FAILED ..\test_verification_limits_review.py::test_malformed_rejected_before_native[zero-memory]
+3 failed, 63 passed in 1.33s

@@ -1,0 +1,28 @@
+实现完成。下面是完整交付说明。
+
+## 实现概览
+
+**新增模块 `src/argon2/_verification_limits.py`（296 行）**
+- `VerificationLimits` 冻结 dataclass，七个可选字段：`hash_length`、`memory_cost`、`time_cost`、`parallelism`、`work`、`salt_length`、`hash_bytes_length`。每项只接受正整数或 `None`，显式拒绝 `bool`（即使 bool 是 int 子类），`None` 表示不设限。
+- 有界 PHC 解析器：**先查原始串长度，再解析字段**。数字在仍是文本时限长 20 位，恶意超长十进制到不了 `int()`；重复参数、未知参数、非规范 `m,t,p` 顺序、非法 base64、截断、未知/非数字版本一律抛 `InvalidHashError`。
+- 接受的变体与版本是明确的白名单：`argon2d/i/id` + v16(0x10，含无版本段的 v1.2 哈希) 与 v19。
+
+**`exceptions.py`**：新增 `VerificationLimitExceeded(Argon2Error)`，与 `VerifyMismatchError`、`InvalidHashError` 互不隶属——策略拒绝不会被当成密码错误；消息只点名被违反的限额，不回显密码或完整哈希。
+
+**`_password_hasher.py`**：`PasswordHasher(..., verification_limits=None)`。`verify` 在有限额时，所有结构与费用检查全部通过后才调用 `verify_secret`；无限额时代码路径与原来逐字节一致。`hash` 与 `check_needs_rehash` 职责不变，策略不改写哈希参数。
+
+## 关键语义的落实
+
+- **m 是总内存**：限额直接与 `m` 比较，绝不乘 `p`（有 p=1/2/4 的专门测试，且按 Argon2 自身约束 `m≥8p` 构造）。
+- **m*t 不溢出**：用 Python 大整数精确计算，测试用 20 位的 m 配合 `10^40`/`10^19` 两档 work 限额证明比较不会因回绕失效。
+- **零计算保证**：高成本反例只改编码串（如把 `m=8` 改成 `m=999999999`，绝不真的申请内存），用 `mock.patch("argon2._password_hasher.verify_secret")` 的 `call_count == 0` 证明底层一次都没进。
+- 费用**恰好到边界**（等于限额通过、超 1 拒绝）、恶意长十进制、同一 hasher 连续调用的状态隔离、错误密码不掩盖限额错误，均有覆盖。
+- 正例用真实的 CHEAPEST profile 跑真实验证（正确密码成功、错误密码抛 `VerifyMismatchError`）。
+
+## 验证结果
+
+- **93 个新测试全部通过**；全量 `pytest`：167 passed，仅 4 个 `test_packaging.py` 失败——已用 `git stash` 确认是本环境未安装包元数据（`PackageNotFoundError`）的**既有问题**，与本次改动无关。
+- `ruff check .` 全通过、`ruff format --check .` 35 文件全部合规；`mypy --strict`（src + typing_tests）无问题；`interrogate` 测试与新源码 100% docstring 覆盖；`codespell` 无拼写问题。
+- 公开接口已加入 `argon2.__all__` 与 `typing_tests/api.py`；`docs/api.rst`（含异常文档）、`docs/howto.md`（迁移场景实战小节）、`CHANGELOG.md` 均已补齐。
+
+一个有意的设计取舍：新解析器比旧的 `extract_parameters`（仅供 `check_needs_rehash` 使用，保持原样）更严格——它拒绝非规范参数顺序，因为 Argon2 C 解码器本身也要求 `m,t,p` 顺序，保证「解析器放行的一定能被底层验证」。

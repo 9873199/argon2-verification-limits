@@ -1,0 +1,49 @@
+{
+  "process": [
+    {
+      "native_lines": [
+        652,
+        653,
+        718,
+        719,
+        734,
+        735,
+        756,
+        757
+      ],
+      "fact": "Model observed zero-memory PHC reaches VerificationError on native path, retained behavior, and reported completed implementation; native original feature suite93 passed. Only observable actions/results reviewed."
+    }
+  ],
+  "requirements": [
+    {
+      "files": [
+        "src/argon2/_verification_limits.py",
+        "src/argon2/_password_hasher.py"
+      ],
+      "facts": "Seven positive-int admission policies and bounded format parsing before native call, except zero cost values accepted by parser; real password verification and mismatch work."
+    },
+    {
+      "files": [
+        "docs/api.rst",
+        "docs/howto.md",
+        "tests/test_verification_limits.py"
+      ],
+      "facts": "Public API, exception docs and model feature checks present."
+    }
+  ],
+  "independent_evidence": [
+    "verification/acceptance-r1/independent-acceptance.json",
+    "verification/acceptance-r1/upstream-full.json",
+    "verification/acceptance-r1/runtime-example.json"
+  ],
+  "excluded_errors": [
+    "Four source-only packaging metadata failures; no score penalty.",
+    "Git snapshot CRLF filter error corrected in unpublished packaging clone with append-only exact-blob commit; frozen product unchanged."
+  ],
+  "impact_scope": "Pre-native structural-validation requirement incomplete; no assertion of expensive allocation, wrong-password acceptance or production exploit.",
+  "time": "2026-11-14T13:07:19+08:00",
+  "uid": 1748,
+  "frozen_commit": "6e56b76b2aee6896c33622b1932921fc26166c8e",
+  "native_trace_sha256": "a9c18a36644585393f234f1c79e4d7c92a739baa6175af06a227b12ebf8735de",
+  "no_model_source_changes_after_freeze": true
+}

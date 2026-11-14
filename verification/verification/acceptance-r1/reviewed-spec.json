@@ -1,0 +1,66 @@
+{
+  "uid": 1748,
+  "run_id": "uf-20261112-new15-phc",
+  "revision": "acceptance-r1",
+  "reviewed": true,
+  "reviewer": "Codex primary reviewer, AI-assisted",
+  "frozen_trace_sha256": "a9c18a36644585393f234f1c79e4d7c92a739baa6175af06a227b12ebf8735de",
+  "product_modules": [
+    "argon2",
+    "argon2._password_hasher",
+    "argon2._verification_limits"
+  ],
+  "support_files": [
+    {
+      "source": "D:\\hc\\userFeedback\\cache\\resume-seven-20261114-r2\\test_verification_limits_review.py",
+      "path": "test_verification_limits_review.py",
+      "sha256": "b245dd2b93050a542ab2f244a8548113c32cc0d43e0d813b2ef2d7fd2e31754e"
+    },
+    {
+      "source": "D:\\hc\\userFeedback\\cache\\resume-seven-20261114-r2\\password-verification-example.py",
+      "path": "password-verification-example.py",
+      "sha256": "433381b3cf8c27026a208b5771be219ac322b8cd656a8dc119ba5cb89849abda"
+    }
+  ],
+  "commands": [
+    {
+      "name": "independent-acceptance",
+      "argv": [
+        "{python}",
+        "-B",
+        "-m",
+        "pytest",
+        "{verification}/test_verification_limits_review.py",
+        "--confcutdir={verification}",
+        "-q",
+        "--tb=short",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml={verification}/independent-results.xml"
+      ]
+    },
+    {
+      "name": "upstream-full",
+      "argv": [
+        "{python}",
+        "-B",
+        "-m",
+        "pytest",
+        "tests",
+        "-q",
+        "--tb=short",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml={verification}/upstream-results.xml"
+      ]
+    },
+    {
+      "name": "runtime-example",
+      "argv": [
+        "{python}",
+        "-B",
+        "{verification}/password-verification-example.py"
+      ]
+    }
+  ]
+}
